@@ -15,6 +15,9 @@ export default {
         warning: '#ffc107',
         info: '#17a2b8',
       },
+      fontFamily: {
+        mona: ['Mona Sans', 'sans-serif'],
+      },
     },
   },
   plugins: [],

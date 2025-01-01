@@ -12,8 +12,23 @@ use Illuminate\Support\Facades\Route;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
 Route::get('/', function () {
-    $nama = 'Komang lah gitu ya ?';
-    return view('welcome', compact('nama'));
+    return view('welcome');
 });
+
+Route::get('login', function () {
+    return view('auth.login');
+})->name('login');
+
+Route::name('dashboard')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard.index');
+    });
+    Route::name('.income')->get('/income', function () {
+        return view('dashboard.income');
+    });
+    Route::name('.expense')->get('/expense', function () {
+        return view('dashboard.expense');
+    });
+});
+
