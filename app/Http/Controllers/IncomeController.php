@@ -1,15 +1,25 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Models\Income;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class CategoryController extends Controller
+class IncomeController extends Controller
 {
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        return view('dashboard.income');
+    }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -18,7 +28,16 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userId = Auth::user()->id;
+        
+        $data = Income::create([
+            'user_id' => $userId,
+            'amount' => $request->amount,
+            'date' => now(),
+            'description' => $request->description ?? null
+        ]);
+
+        return ResponseHelper::success($data, 'Income Created');
     }
 
     /**
@@ -27,9 +46,9 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show($id)
     {
-        
+        //
     }
 
     /**

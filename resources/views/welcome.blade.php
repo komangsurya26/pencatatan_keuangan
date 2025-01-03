@@ -1,13 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pencatatan Keuangan</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Pencatatan Keuangan')
 
+@section('content')
 <body class="h-[200vh] overflow-hidden font-mona">
     <div class="w-full h-full p-8 bg-black text-white">
         <!-- Stacked Cards Section -->
@@ -51,5 +46,6 @@
         </a>
     </div>
 </body>
+@endsection
 
 </html>

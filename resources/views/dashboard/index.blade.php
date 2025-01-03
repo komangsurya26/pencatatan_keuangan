@@ -1,19 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Pencatatan Keuangan')
 
+@section('content')
 <body class="h-screen flex flex-col overflow-hidden font-mona">
     <!-- Header -->
     <header class="sticky top-0 z-50 bg-white">
         <div class="h-12 p-8 items-center flex justify-between">
-            <h1 class="text-2xl font-semibold">Komang</h1>
-            <img class="h-8" src="{{ asset('logo/bell.png') }}" alt="">
+            <h1 class="text-2xl font-semibold">{{ $user->name }}</h1>
+            <button id="logout" type="button">
+                <img class="h-8" src="{{ asset('logo/bell.png') }}" alt="">
+            </button>
         </div>
     </header>
 
@@ -91,5 +88,31 @@
         </div>
     </footer>
 </body>
+@endsection
+
+@push('scripts')
+    <script>
+        const logout = document.querySelector('#logout')
+
+        logout.addEventListener('click', async () => {
+            try {
+                const response = await fetch('/api/logout', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    }
+                });
+                const data = await response.json();                
+
+                if (data.meta.code === 200) {
+                    window.location.href = '/login';
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        })
+    </script>
+@endpush
 
 </html>

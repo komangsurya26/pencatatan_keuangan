@@ -1,16 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
-</head>
+@section('title', 'Login')
 
+@section('content')
 <body class="h-[200vh] overflow-hidden font-mona">
     <div class="w-full h-full p-8 bg-black text-white">
-        <form id="login">
+        <form>
             <div class="relative text-center h-48 mb-36">
                 <!-- Background Card 1 -->
                 <div class="absolute top-0 left-1/2 -translate-y-14 translate-x-20 w-40 h-[180px] border-[5px] border-[#bfdbfe] bg-white/5 z-20"></div>
@@ -27,13 +22,16 @@
                     <img class="w-60 mx-auto" src="{{ asset('logo/smile.png') }}" alt="">
                 </div>
             </div>
+
             <div class="mb-9">
                 <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email</label>
-                <input type="email" id="email" name="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <input type="email" id="email" name="email" value="{{ old('email') }}"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
             </div>
             <div class="mb-9">
                 <label for="password" class="block mb-2 text-sm font-medium text-gray-300">Password</label>
-                <input type="password" id="password" name="password" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
+                <input type="password" id="password" name="password"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5">
             </div>
             <div class="mb-9">
                 <button type="submit"
@@ -44,30 +42,39 @@
         </form>
     </div>
 </body>
+@endsection
 
+@push('scripts')
 <script>
-    document.getElementById('login').addEventListener('submit', (e) => {
+    document.querySelector('form').addEventListener('submit', async (e) => {
         e.preventDefault();
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
 
-        fetch('/api/login', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        }).then((response) => {
-            if (response.status === 200) {
+        const email = document.querySelector('#email').value;
+        const password = document.querySelector('#password').value;
+
+        try {
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            });
+            
+            const data = await response.json();
+
+            if (data.meta.code === 200) {
                 window.location.href = '/dashboard';
-            } else {
-                alert('Login failed');
             }
-        });
-    })
+        } catch (error) {
+            console.error(error);
+        }
+    });
 </script>
+@endpush
 
 </html>

@@ -1,15 +1,14 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Http\Controllers\Controller;
 use App\Models\User;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -33,19 +32,14 @@ class AuthController extends Controller
 
             $user = User::where('email', $request->email)->first();
             if (!Hash::check($request->password, $user->password, [])) {
-                throw new Exception('Incorrect Password', 401);
+                abort(401);
             }
 
-            // generate token
-            $tokenResult = $user->createToken('authToken')->plainTextToken;
+            $request->session()->regenerate();
 
             // return response
-            return ResponseHelper::success([
-                'access_token' => $tokenResult,
-                'token_type' => 'Bearer',
-                'user' => $user
-            ], 'Login Success');
-        } catch (Exception $th) {
+            return ResponseHelper::success($user, 'Login Success');
+        } catch (\Throwable $th) {
             return ResponseHelper::error("Login Failed", 400);
         }
     }
@@ -72,14 +66,18 @@ class AuthController extends Controller
                 'user' => $user
             ], 'Register Success');
         } catch (\Throwable $th) {
-            dd($th);
             return ResponseHelper::error("Register Failed", 400);
         }
     }
 
     public function logout(Request $request)
     {
-        $token = $request->user()->currentAccessToken()->delete();
-        return ResponseHelper::success($token, 'Logout Success');
+        try {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            return ResponseHelper::success(null, 'Logout Success');
+        } catch (Throwable $th) {
+            return ResponseHelper::error("Logout Failed", 400);
+        }
     }
-}
+} 
